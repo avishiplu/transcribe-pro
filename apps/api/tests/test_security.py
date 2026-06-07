@@ -3,7 +3,7 @@ from datetime import timedelta
 from jose import jwt
 
 from app.core.config import settings
-from app.core.security import create_access_token, hash_password, verify_password
+from app.core.security import create_access_token, decode_access_token, hash_password, verify_password
 
 
 def test_hash_password_does_not_store_plain_text():
@@ -34,3 +34,12 @@ def test_create_access_token_contains_subject():
     )
 
     assert payload["sub"] == "user-123"
+
+
+def test_decode_access_token_returns_subject():
+    token = create_access_token(
+        subject="user-123",
+        expires_delta=timedelta(minutes=5),
+    )
+
+    assert decode_access_token(token) == "user-123"
