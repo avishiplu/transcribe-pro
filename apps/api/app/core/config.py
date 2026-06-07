@@ -29,6 +29,9 @@ class Settings(BaseSettings):
 
     log_level: str = "INFO"
 
+    # Phase 2 — database
+    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/transcribe_pro"
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def parse_cors_origins(cls, value: str | list[str]) -> list[str]:
