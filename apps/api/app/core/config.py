@@ -32,6 +32,11 @@ class Settings(BaseSettings):
     # Phase 2 — database
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/transcribe_pro"
 
+    # Phase 3 — authentication
+    jwt_secret_key: str = "change-me-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 30
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def parse_cors_origins(cls, value: str | list[str]) -> list[str]:
