@@ -80,6 +80,28 @@ def test_upload_audio_route_creates_transcription_job_for_logged_in_user():
     assert fake_db.refreshed_objects == [created_job]
 
 
+def test_upload_audio_route_saves_language_code_for_logged_in_user():
+    fake_db = FakeDb()
+
+    async def fake_get_db():
+        yield fake_db
+
+    app.dependency_overrides[get_current_user] = fake_get_current_user
+    app.dependency_overrides[get_db] = fake_get_db
+
+    response = client.post(
+        "/api/v1/uploads/audio",
+        data={"language_code": "DE"},
+        files={"file": ("lecture.mp3", b"fake audio data", "audio/mpeg")},
+    )
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    created_job = fake_db.added_objects[0]
+    assert created_job.language_code == "de"
+
+
 def test_upload_audio_route_rejects_unsupported_file_for_logged_in_user():
     fake_db = FakeDb()
 

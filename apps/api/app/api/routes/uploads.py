@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
@@ -19,6 +19,7 @@ router = APIRouter()
 )
 async def upload_audio(
     file: UploadFile = File(...),
+    language_code: str | None = Form(default=None),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> UploadAcceptedResponse:
@@ -32,6 +33,8 @@ async def upload_audio(
         size_bytes=size_bytes,
     )
 
+    normalized_language_code = language_code.strip().lower() if language_code else None
+
     stored_file_path = save_uploaded_audio_file(
         file=file,
         extension=upload_metadata.extension,
@@ -42,7 +45,7 @@ async def upload_audio(
         user_id=current_user.id,
         original_filename=upload_metadata.filename,
         stored_file_path=stored_file_path,
-        language_code=None,
+        language_code=normalized_language_code,
         provider="groq",
         status="queued",
         duration_seconds=None,
