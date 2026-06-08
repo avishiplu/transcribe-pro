@@ -44,3 +44,18 @@ async def get_next_queued_transcription_job(db: AsyncSession) -> TranscriptionJo
     )
 
     return result.scalar_one_or_none()
+
+
+async def get_transcription_job_for_user_by_id(
+    db: AsyncSession,
+    *,
+    job_id: str,
+    user_id: str,
+) -> TranscriptionJob | None:
+    result = await db.execute(
+        select(TranscriptionJob)
+        .where(TranscriptionJob.id == job_id)
+        .where(TranscriptionJob.user_id == user_id)
+    )
+
+    return result.scalar_one_or_none()
