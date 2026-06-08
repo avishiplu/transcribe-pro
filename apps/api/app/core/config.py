@@ -37,6 +37,13 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_access_token_expire_minutes: int = 30
 
+    # Phase 5/6 — transcription providers
+    groq_api_key: str | None = None
+    groq_base_url: str = "https://api.groq.com/openai/v1"
+    groq_transcription_model: str = "whisper-large-v3-turbo"
+
+    openai_api_key: str | None = None
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def parse_cors_origins(cls, value: str | list[str]) -> list[str]:
