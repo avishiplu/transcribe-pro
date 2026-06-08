@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.transcription_job import TranscriptionJob
@@ -32,3 +33,14 @@ async def create_transcription_job(
     await db.refresh(job)
 
     return job
+
+
+async def get_next_queued_transcription_job(db: AsyncSession) -> TranscriptionJob | None:
+    result = await db.execute(
+        select(TranscriptionJob)
+        .where(TranscriptionJob.status == "queued")
+        .order_by(TranscriptionJob.created_at.asc())
+        .limit(1)
+    )
+
+    return result.scalar_one_or_none()
