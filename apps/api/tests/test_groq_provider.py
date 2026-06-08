@@ -42,7 +42,17 @@ def test_extract_transcription_text_from_string():
     assert extract_transcription_text("Hello string") == "Hello string"
 
 
-def test_get_groq_client_requires_api_key():
+def test_get_groq_client_requires_api_key(monkeypatch):
+    from app.services.transcription import groq_provider
+
+    fake_settings = SimpleNamespace(
+        groq_api_key=None,
+        groq_base_url="https://api.groq.com/openai/v1",
+        groq_transcription_model="whisper-large-v3-turbo",
+    )
+
+    monkeypatch.setattr(groq_provider, "settings", fake_settings)
+
     with pytest.raises(GroqApiKeyMissingError):
         get_groq_client()
 

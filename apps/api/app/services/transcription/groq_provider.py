@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any
 
-from openai import OpenAI
+from openai import BadRequestError, OpenAI
 
 from app.core.config import settings
 
@@ -54,6 +54,18 @@ def transcribe_audio_with_groq(
         if language_code:
             kwargs["language"] = language_code
 
-        response = active_client.audio.transcriptions.create(**kwargs)
+        try:
+            response = active_client.audio.transcriptions.create(**kwargs)
+        except BadRequestError as error:
+            error_detail = str(error)
+
+            response = getattr(error, "response", None)
+            if response is not None:
+                try:
+                    error_detail = response.text
+                except Exception:
+                    error_detail = str(error)
+
+            raise RuntimeError(f"Groq transcription request failed: {error_detail}") from error
 
     return extract_transcription_text(response)
