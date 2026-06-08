@@ -39,4 +39,4 @@ storage/
 *.log
 
 # Docker
-.docker/
+.docker/\napps/api/storage/\n

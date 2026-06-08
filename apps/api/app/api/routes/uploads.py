@@ -6,6 +6,7 @@ from app.dependencies.auth import get_current_user
 from app.models.user import User
 from app.repositories.transcription_jobs import create_transcription_job
 from app.schemas.upload import UploadAcceptedResponse
+from app.services.file_storage import save_uploaded_audio_file
 from app.services.upload_validation import validate_upload_metadata
 
 
@@ -31,11 +32,16 @@ async def upload_audio(
         size_bytes=size_bytes,
     )
 
+    stored_file_path = save_uploaded_audio_file(
+        file=file,
+        extension=upload_metadata.extension,
+    )
+
     job = await create_transcription_job(
         db,
         user_id=current_user.id,
         original_filename=upload_metadata.filename,
-        stored_file_path=None,
+        stored_file_path=stored_file_path,
         language_code=None,
         provider="groq",
         status="queued",
