@@ -11,4 +11,4 @@ class UploadValidationResult(BaseModel):
 class UploadAcceptedResponse(BaseModel):
     job_id: str
     filename: str
-    status: str = "uploaded"
+    status: str = "queued"

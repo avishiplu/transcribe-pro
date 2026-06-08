@@ -15,10 +15,10 @@ def test_upload_validation_result_accepts_audio_metadata():
     assert result.size_bytes == 1024
 
 
-def test_upload_accepted_response_defaults_to_uploaded_status():
+def test_upload_accepted_response_defaults_to_queued_status():
     response = UploadAcceptedResponse(
         job_id="job-123",
         filename="lecture.mp3",
     )
 
-    assert response.status == "uploaded"
+    assert response.status == "queued"
